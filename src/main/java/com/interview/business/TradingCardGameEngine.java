@@ -13,12 +13,8 @@ import java.util.Random;
 
 public class TradingCardGameEngine {
 
-  private Player playerOne;
-  private Player playerTwo;
-
-  private Deck[] playerDecks = new Deck[2];
-
-  private Queue<Player> playerQueue = new LinkedList<>();
+  private final Deck[] playerDecks = new Deck[2];
+  private final Queue<Player> playerQueue = new LinkedList<>();
 
   private int round = 1;
 
@@ -59,8 +55,8 @@ public class TradingCardGameEngine {
     Random random = new Random();
     String playerOneName = random.nextBoolean() ? playerNameFirst : playerNameSecond;
     System.out.println(playerOneName + " is player one.");
-    playerOne = new Player(1, playerOneName);
-    playerTwo = new Player(2,
+    Player playerOne = new Player(1, playerOneName);
+    Player playerTwo = new Player(2,
         playerOneName.equals(playerNameFirst) ? playerNameSecond : playerNameFirst);
 
     playerQueue.add(playerOne);
