@@ -59,7 +59,7 @@ public class GameEngine {
 
       System.out.println("----------------------------------");
       Player currentPlayer = playerQueue.poll();
-      currentPlayer.refillMana(getMana());
+      currentPlayer.refillMana(getManaSlot());
       System.out.println(
           currentPlayer.getName() + " started to play with health " + currentPlayer.getHealth()
               + " mana " + currentPlayer.getMana() + "/" + currentPlayer.getManaSlot());
@@ -100,8 +100,9 @@ public class GameEngine {
     return winner;
   }
 
-  public int getMana() {
-    return (round % 2) + (round / 2);
+  public int getManaSlot() {
+    int slot = (round % 2) + (round / 2);
+    return Math.min(slot, 10);
   }
 
   public Card getACardFromDeck(int playOrder) {
