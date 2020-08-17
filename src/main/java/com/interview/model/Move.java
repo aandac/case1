@@ -14,4 +14,10 @@ public class Move {
     return moves;
   }
 
+  @Override
+  public String toString() {
+    return "Move{" +
+        "moves=" + moves +
+        '}';
+  }
 }
