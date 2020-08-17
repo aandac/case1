@@ -1,6 +1,7 @@
 package com.interview.business;
 
 import com.interview.business.controller.GameController;
+import com.interview.business.ui.UIService;
 import com.interview.model.Card;
 import com.interview.model.Deck;
 import com.interview.model.Move;
@@ -20,18 +21,21 @@ public class GameEngine {
   private int round = 1;
 
   private final GameController gameController;
+  private final UIService uiService;
 
-  public GameEngine(GameController gameController) {
+  public GameEngine(GameController gameController, UIService uiService) {
     this.gameController = gameController;
+    this.uiService = uiService;
   }
 
   public void newGame(String playerNameFirst, String playerNameSecond) {
     Random random = new Random();
     String playerOneName = random.nextBoolean() ? playerNameFirst : playerNameSecond;
-    System.out.println("New game started. " + playerOneName + " is player one.");
-    Player playerOne = new Player(1, playerOneName, gameController);
+    uiService.printMessage("New game started. " + playerOneName + " is player one.");
+    Player playerOne = new Player(1, playerOneName, uiService, gameController);
     Player playerTwo = new Player(2,
-        playerOneName.equals(playerNameFirst) ? playerNameSecond : playerNameFirst, gameController);
+        playerOneName.equals(playerNameFirst) ? playerNameSecond : playerNameFirst, uiService,
+        gameController);
 
     playerQueue.add(playerOne);
     playerQueue.add(playerTwo);
@@ -53,14 +57,14 @@ public class GameEngine {
     while (true) {
       Player winner = checkWinner();
       if (winner != null) {
-        System.out.println(winner.getName() + " has win the game.");
+        uiService.printMessage(winner.getName() + " has win the game.");
         break;
       }
 
-      System.out.println("----------------------------------");
+      uiService.printMessage("----------------------------------");
       Player currentPlayer = playerQueue.poll();
       currentPlayer.refillMana(getManaSlot());
-      System.out.println(
+      uiService.printMessage(
           currentPlayer.getName() + " started to play with health " + currentPlayer.getHealth()
               + " mana " + currentPlayer.getMana() + "/" + currentPlayer.getManaSlot());
 
@@ -76,13 +80,13 @@ public class GameEngine {
       Move move = currentPlayer.playCards();
       Player nextPlayer = playerQueue.peek();
       nextPlayer.receiveMove(move);
-      System.out.println(
+      uiService.printMessage(
           currentPlayer.getName() + " moved with " + move + " and " + nextPlayer.getName()
               + " health is " + nextPlayer.getHealth());
-      System.out.println(currentPlayer.getName() + " ended to play.");
+      uiService.printMessage(currentPlayer.getName() + " ended to play.");
       playerQueue.add(currentPlayer);
       round++;
-      System.out.println("----------------------------------");
+      uiService.printMessage("----------------------------------");
     }
   }
 

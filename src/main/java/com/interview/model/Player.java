@@ -1,6 +1,7 @@
 package com.interview.model;
 
 import com.interview.business.controller.GameController;
+import com.interview.business.ui.UIService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,11 +16,13 @@ public class Player {
   private int mana;
   private int manaSlot;
   private final Card[] hands;
+  private final UIService uiService;
   private final GameController gameController;
 
-  public Player(int playOrder, String name, GameController gameController) {
+  public Player(int playOrder, String name, UIService uiService, GameController gameController) {
     this.name = name;
     this.playOrder = playOrder;
+    this.uiService = uiService;
     this.gameController = gameController;
     this.health = 30;
     this.mana = 0;
@@ -55,7 +58,7 @@ public class Player {
 
   public void receiveCards(List<Card> cards) {
     if (Arrays.stream(hands).allMatch(Objects::nonNull)) {
-      System.out.println("Your hands are full. Overloaded.");
+      uiService.printMessage("Your hands are full. Overloaded.");
       return;
     }
     for (Card card : cards) {
@@ -103,12 +106,12 @@ public class Player {
 
 
   public void showCards() {
-    System.out.println("Player " + name
+    uiService.printMessage("Player " + name
         + " cards in his/her hand are shown in below. Select one or more card or just enter to skip the turn.");
     for (int i = 0; i < hands.length; i++) {
       Card card = hands[i];
       if (card != null) {
-        System.out.println("Select number " + i + " card with damage " + card.getDamage());
+        uiService.printMessage("Select number " + i + " card with damage " + card.getDamage());
       }
     }
   }
