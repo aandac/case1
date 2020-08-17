@@ -9,6 +9,7 @@ import com.interview.model.Card;
 import com.interview.model.Player;
 import java.util.Arrays;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -17,13 +18,24 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class PlayerTest {
 
 
-  @Test
-  public void test_playerMana() {
+  private Player player;
+
+  @Before
+  public void init(){
     GameController gameController = mock(GameController.class);
     UIService uiService = mock(UIService.class);
-    Player player = new Player(1, "Test", uiService, gameController);
-    Assert.assertEquals(0, player.getMana());
+    player = new Player(1, "Test", uiService, gameController);
 
+  }
+
+
+  @Test
+  public void initial_player_mana() {
+    Assert.assertEquals(0, player.getMana());
+  }
+
+  @Test
+  public void refill_player_mana(){
     player.refillMana(1);
     Assert.assertEquals(1, player.getMana());
 
