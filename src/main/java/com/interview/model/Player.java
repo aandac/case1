@@ -2,125 +2,114 @@ package com.interview.model;
 
 import com.interview.business.controller.GameController;
 import com.interview.business.ui.UIService;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
+
+import static com.interview.business.GameConfig.INITIAL_PLAYER_HEALTH;
+import static com.interview.business.GameConfig.INITIAL_PLAYER_MANA;
 
 public class Player {
 
-  private final String name;
-  private final int playOrder;
-  private int health;
-  private int mana;
-  private int manaSlot;
-  private final Card[] hands;
-  private final UIService uiService;
-  private final GameController gameController;
+    private final String name;
+    private int health;
+    private int mana;
+    private int manaSlot;
+    private Map<Integer, Card> cards;
+    private final UIService uiService;
+    private final GameController gameController;
 
-  public Player(int playOrder, String name, UIService uiService, GameController gameController) {
-    this.name = name;
-    this.playOrder = playOrder;
-    this.uiService = uiService;
-    this.gameController = gameController;
-    this.health = 30;
-    this.mana = 0;
-    this.hands = new Card[5];
-  }
-
-  public int getPlayOrder() {
-    return playOrder;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public int getHealth() {
-    return health;
-  }
-
-  private void receiveDamage(int damage) {
-    health -= damage;
-    if (health < 0) {
-      health = 0;
+    public Player(String name, UIService uiService, GameController gameController) {
+        this.name = name;
+        this.uiService = uiService;
+        this.gameController = gameController;
+        this.health = INITIAL_PLAYER_HEALTH;
+        this.mana = INITIAL_PLAYER_MANA;
+        this.cards = new HashMap<>(5);
     }
-  }
 
-  public void refillMana(int manaSlot) {
-    this.manaSlot = manaSlot;
-    this.mana = manaSlot;
-    if (this.mana > 10) {
-      this.mana = 10;
+    public String getName() {
+        return name;
     }
-  }
 
-  public void receiveCards(List<Card> cards) {
-    if (Arrays.stream(hands).allMatch(Objects::nonNull)) {
-      uiService.printMessage("Your hands are full. Overloaded.");
-      return;
+    public void refillMana(int manaSlot) {
+        this.manaSlot = manaSlot;
+        this.mana = manaSlot;
+        if (this.mana > 10) {
+            this.mana = 10;
+        }
     }
-    for (Card card : cards) {
-      for (int i = 0; i < hands.length; i++) {
-        Card hand = hands[i];
-        if (hand != null) {
-          continue;
+
+    public void receiveCards(List<Card> receivedCards) {
+        if (this.cards.size() == 5) {
+            uiService.printMessage("Your hands are full. Overloaded.");
+            return;
         }
 
-        hands[i] = card;
-        break;
-      }
+        for (Card card : receivedCards) {
+            this.cards.put(this.cards.size() + 1, card);
+        }
     }
-  }
 
-  public Move playCards() {
-    showCards();
-    // get moves
-    int[] indexes = gameController.getSelectedCards();
-    if (indexes == null) {
-      return new Move(Collections.emptyList());
+    public Turn playCards() {
+        showCards();
+        // get moves
+        int[] indexes = gameController.getSelectedCards();
+        if (indexes == null) {
+            return new Turn(Collections.emptyList());
+        }
+        List<Card> moves = new ArrayList<>();
+        for (int cardPositionInHand : indexes) {
+            Card card = cards.get(cardPositionInHand);
+            int cardDamage = card.getDamage();
+            if (this.mana < cardDamage || (this.mana - cardDamage < 0)) {
+                System.out
+                        .println("Not enough mana to play. Choose again. Your mana is " + this.mana + ".");
+                return playCards();
+            }
+            this.mana -= cardDamage;
+
+            cards.remove(cardPositionInHand);
+            moves.add(card);
+        }
+
+        // arrange cards in hands
+        Map<Integer,Card> tempCards = new HashMap<>();
+        Collection<Card> values = cards.values();
+        for (Card card : values) {
+            tempCards.put(tempCards.size() + 1, card);
+        }
+        this.cards = tempCards;
+
+        return new Turn(moves);
     }
-    List<Card> moves = new ArrayList<>();
-    for (int i = 0; i < indexes.length; i++) {
-      int cardPositionInHand = indexes[i];
-      Card card = hands[cardPositionInHand];
-      int cardDamage = card.getDamage();
-      if (this.mana < cardDamage || (this.mana - cardDamage < 0)) {
-        System.out
-            .println("Not enough mana to play. Choose again. Your mana is " + this.mana + ".");
-        return playCards();
-      }
-      this.mana -= cardDamage;
 
-      hands[cardPositionInHand] = null;
-      moves.add(card);
+    public boolean isDead() {
+        return this.health <= 0;
     }
-    return new Move(moves);
-  }
 
-
-  public void receiveMove(Move move) {
-    move.getMoves().forEach(card -> receiveDamage(card.getDamage()));
-  }
-
-
-  public void showCards() {
-    uiService.printMessage("Player " + name
-        + " cards in his/her hand are shown in below. Select one or more card or just enter to skip the turn.");
-    for (int i = 0; i < hands.length; i++) {
-      Card card = hands[i];
-      if (card != null) {
-        uiService.printMessage("Select number " + i + " card with damage " + card.getDamage());
-      }
+    public void applyDamage(int damage) {
+        health -= damage;
+        if (health < 0) {
+            health = 0;
+        }
     }
-  }
 
-  public int getMana() {
-    return mana;
-  }
+    public void applyDamage(Turn turn) {
+        turn.getPlayedCards().forEach(card -> applyDamage(card.getDamage()));
+    }
 
-  public int getManaSlot() {
-    return manaSlot;
-  }
+
+    private void showCards() {
+        uiService.printMessage("Player " + name
+                + " cards in his/her hand are shown in below. Select one or more card or just enter to skip the turn.");
+        int count = 1;
+        for (Map.Entry<Integer, Card> entry : cards.entrySet()) {
+            uiService.printMessage("Select number " + (count++) + " card with damage " + entry.getValue().getDamage());
+        }
+    }
+
+    public String getStatus() {
+        return "Health " + this.health + ", Mana " + this.mana + "/" + this.manaSlot + ".";
+    }
+
 }
