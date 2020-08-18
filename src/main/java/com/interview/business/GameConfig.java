@@ -12,5 +12,7 @@ public final class GameConfig {
 
     public static final int MAXIMUM_MANA_SLOT = 10;
 
+    public static final int MAXIMUM_CARD_COUNT_IN_HANDS = 5;
+
     public static final int BLEED_OUT_DAMAGE = 1;
 }

@@ -57,23 +57,33 @@ public class Player {
         if (indexes == null) {
             return new Turn(Collections.emptyList());
         }
+        int totalDamage = 0;
+        for (int cardPositionInHand : indexes) {
+            Card card = cards.get(cardPositionInHand);
+            if (card != null) {
+                totalDamage += card.getDamage();
+            }
+        }
+        if (this.mana < totalDamage || (this.mana - totalDamage < 0)) {
+            System.out.println("Not enough mana to play. Choose again. Your mana is "
+                    + this.mana + " and your selected card's total damage is " + totalDamage + ".");
+            return playCards();
+        }
+
         List<Card> moves = new ArrayList<>();
         for (int cardPositionInHand : indexes) {
             Card card = cards.get(cardPositionInHand);
-            int cardDamage = card.getDamage();
-            if (this.mana < cardDamage || (this.mana - cardDamage < 0)) {
-                System.out
-                        .println("Not enough mana to play. Choose again. Your mana is " + this.mana + ".");
-                return playCards();
+            int cardDamage = 0;
+            if (card != null) {
+                cardDamage = card.getDamage();
+                this.mana -= cardDamage;
+                cards.remove(cardPositionInHand);
+                moves.add(card);
             }
-            this.mana -= cardDamage;
-
-            cards.remove(cardPositionInHand);
-            moves.add(card);
         }
 
         // arrange cards in hands
-        Map<Integer,Card> tempCards = new HashMap<>();
+        Map<Integer, Card> tempCards = new HashMap<>();
         Collection<Card> values = cards.values();
         for (Card card : values) {
             tempCards.put(tempCards.size() + 1, card);

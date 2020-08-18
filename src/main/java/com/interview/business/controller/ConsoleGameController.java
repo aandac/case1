@@ -3,6 +3,8 @@ package com.interview.business.controller;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import static com.interview.business.GameConfig.MAXIMUM_CARD_COUNT_IN_HANDS;
+
 public class ConsoleGameController implements GameController {
 
     @Override
@@ -20,7 +22,7 @@ public class ConsoleGameController implements GameController {
             }
         }
         ;
-        return numbers != null ? Arrays.stream(numbers).filter(value -> value <= 5).toArray() : null;
+        return numbers != null ? Arrays.stream(numbers).filter(value -> value <= MAXIMUM_CARD_COUNT_IN_HANDS).toArray() : null;
     }
 
 }

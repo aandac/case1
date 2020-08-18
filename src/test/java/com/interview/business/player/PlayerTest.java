@@ -28,24 +28,6 @@ public class PlayerTest {
 
   }
 
-
-//  @Test
-//  public void initial_player_mana() {
-//    Assert.assertEquals(0, player.getMana());
-//  }
-//
-//  @Test
-//  public void refill_player_mana(){
-//    player.refillMana(1);
-//    Assert.assertEquals(1, player.getMana());
-//
-//    player.refillMana(5);
-//    Assert.assertEquals(5, player.getMana());
-//
-//    player.refillMana(11);
-//    Assert.assertEquals(10, player.getMana());
-//  }
-
   @Test
   public void test_receiveCards() {
     TestGameController gameController = new TestGameController();

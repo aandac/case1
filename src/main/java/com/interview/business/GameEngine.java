@@ -80,7 +80,6 @@ public class GameEngine {
             uiService.printMessage(currentPlayer.getName() +
                     (turn.getPlayedCards().isEmpty() ? " skipped his/her turn. " : " played with card(s) "
                             + turn + "."));
-            uiService.printMessage(currentPlayer.getName() + " ended to play.");
             playerQueue.add(currentPlayer);
             round++;
             uiService.printMessage("----------------------------------");
