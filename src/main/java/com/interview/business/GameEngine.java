@@ -31,7 +31,7 @@ public class GameEngine {
     public void newGame(String playerNameFirst, String playerNameSecond) {
         Random random = new Random();
         String playerOneName = random.nextBoolean() ? playerNameFirst : playerNameSecond;
-        uiService.printMessage("New game started. " + playerOneName + " is player one.");
+        uiService.display("New game started. " + playerOneName + " is player one.");
 
         Player playerOne = new Player(playerOneName, uiService, gameController);
         String playerTwoName = playerOneName.equals(playerNameFirst) ? playerNameSecond : playerNameFirst;
@@ -57,14 +57,14 @@ public class GameEngine {
         while (true) {
             Player winner = checkWinner();
             if (winner != null) {
-                uiService.printMessage(winner.getName() + " has won the game.");
+                uiService.display(winner.getName() + " has won the game.");
                 break;
             }
 
-            uiService.printMessage("----------------------------------");
+            uiService.display("----------------------------------");
             Player currentPlayer = playerQueue.poll();
             currentPlayer.refillMana(getManaSlot());
-            uiService.printMessage(currentPlayer.getName() + " started to play. " + currentPlayer.getStatus());
+            uiService.display(currentPlayer.getName() + " started to play. " + currentPlayer.getStatus());
 
             Card cardFromDeck = getACardFromDeck(currentPlayer.getName());
             if (cardFromDeck != null) {
@@ -77,12 +77,12 @@ public class GameEngine {
             Turn turn = currentPlayer.playCards();
             Player nextPlayer = playerQueue.peek();
             nextPlayer.applyDamage(turn);
-            uiService.printMessage(currentPlayer.getName() +
+            uiService.display(currentPlayer.getName() +
                     (turn.getPlayedCards().isEmpty() ? " skipped his/her turn. " : " played with card(s) "
                             + turn + "."));
             playerQueue.add(currentPlayer);
             round++;
-            uiService.printMessage("----------------------------------");
+            uiService.display("----------------------------------");
         }
     }
 
@@ -92,6 +92,7 @@ public class GameEngine {
         Iterator<Player> iterator = playerQueue.iterator();
         while (iterator.hasNext()) {
             Player player = iterator.next();
+            // if player has 0 health then the opponent has won the game
             if (player.isDead()) {
                 winner = iterator.next();
                 break;

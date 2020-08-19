@@ -7,6 +7,7 @@ import java.util.*;
 
 import static com.interview.business.GameConfig.INITIAL_PLAYER_HEALTH;
 import static com.interview.business.GameConfig.INITIAL_PLAYER_MANA;
+import static com.interview.business.GameConfig.MAXIMUM_MANA_SLOT;
 
 public class Player {
 
@@ -34,14 +35,14 @@ public class Player {
     public void refillMana(int manaSlot) {
         this.manaSlot = manaSlot;
         this.mana = manaSlot;
-        if (this.mana > 10) {
-            this.mana = 10;
+        if (this.mana > MAXIMUM_MANA_SLOT) {
+            this.mana = MAXIMUM_MANA_SLOT;
         }
     }
 
     public void receiveCards(List<Card> receivedCards) {
         if (this.cards.size() == 5) {
-            uiService.printMessage("Your hands are full. Overloaded.");
+            uiService.display("Your hands are full. Overloaded.");
             return;
         }
 
@@ -110,11 +111,11 @@ public class Player {
 
 
     private void showCards() {
-        uiService.printMessage("Player " + name
+        uiService.display("Player " + name
                 + " cards in his/her hand are shown in below. Select one or more card or just enter to skip the turn.");
         int count = 1;
         for (Map.Entry<Integer, Card> entry : cards.entrySet()) {
-            uiService.printMessage("Select number " + (count++) + " card with damage " + entry.getValue().getDamage());
+            uiService.display("Select number " + (count++) + " card with damage " + entry.getValue().getDamage());
         }
     }
 
