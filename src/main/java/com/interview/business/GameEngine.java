@@ -111,4 +111,5 @@ public class GameEngine {
         return cards != null ? cards.get(0) : null;
     }
 
+    public void dev(){}
 }
