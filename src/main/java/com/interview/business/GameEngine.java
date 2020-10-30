@@ -110,4 +110,6 @@ public class GameEngine {
         List<Card> cards = playerDecks.get(playerName).drawCard(1);
         return cards != null ? cards.get(0) : null;
     }
+
+    public void dev(){}
 }
